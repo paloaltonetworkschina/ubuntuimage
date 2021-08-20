@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-s
+  namespace: performance-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu-s
+  template:
+    metadata:
+      labels:
+        app: ubuntu-s
+      annotations:
+          paloaltonetworks.com/firewall: pan-fw
+      name: ubuntu-s
+    spec:
+      containers:
+      - name: ubuntu-s
+        image: zyseu/my-shellinabox-ubuntu:v1
+        ports:
+        - containerPort: 22
+          name: ssh
+        - containerPort: 5001
+          name: iperf
+      nodeSelector:
+        type: b
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ubuntu-s
+  namespace: performance-test
+spec:
+  type: NodePort
+  ports:
+  - name: ssh
+    port: 22
+    protocol: TCP
+    targetPort: 22
+  - name: iperf
+    port: 5001
+    protocol: TCP

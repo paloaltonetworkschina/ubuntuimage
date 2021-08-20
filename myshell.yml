@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myshell
+  namespace: poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myshell
+  template:
+    metadata:
+      labels:
+        app: myshell
+      annotations:
+          paloaltonetworks.com/firewall: pan-fw
+      name: myshell
+    spec:
+      containers:
+      - name: myshell
+        image: zyseu/my-shellinabox-ubuntu:v1
+        ports:
+        - containerPort: 22
+          name: shell
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myshell
+  namespace: poc
+spec:
+  type: NodePort
+  ports:
+  - port: 22
+    targetPort: 22
+  selector:
+    app: myshell
